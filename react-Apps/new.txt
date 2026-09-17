@@ -1,0 +1,149 @@
+import React, { useState } from 'react';
+import './menu.css';
+
+const CalculatriceSimple = () => {
+    const [value1, setValue1] = useState('');
+    const [value2, setValue2] = useState('');
+    const [mathsymbols, setMathsymbols] = useState('');
+    const [result, setResult] = useState('');
+    const [activeField, setActiveField] = useState('value1');
+
+    console.log('render');
+
+    // Handles digit and dot button clicks
+    const handleDigitClick = (digit) => {
+        if (activeField === 'value1') {
+            if (digit === '.' && value1.includes('.')) return;
+            setValue1(prev => prev + digit);
+        } else if (activeField === 'value2') {
+            if (digit === '.' && value2.includes('.')) return;
+            setValue2(prev => prev + digit);
+        }
+    };
+
+    // Handles mathematical operator clicks
+    const handleOperatorClick = (symbol) => {
+        setMathsymbols(symbol);
+        setActiveField('value2'); // Move focus to the second field
+    };
+
+    // Performs calculation
+    const handleCalculate = () => {
+        const num1 = parseFloat(value1);
+        const num2 = parseFloat(value2);
+
+        if (isNaN(num1) || isNaN(num2)) {
+            setResult('Error');
+            return;
+        }
+
+        let calcResult;
+        switch (mathsymbols) {
+            case '+':
+                calcResult = num1 + num2;
+                break;
+            case '-':
+                calcResult = num1 - num2;
+                break;
+            case '*':
+                calcResult = num1 * num2;
+                break;
+            case '/':
+                if (num2 === 0) {
+                    calcResult = 'Division by 0';
+                } else {
+                    calcResult = num1 / num2;
+                }
+                break;
+            default:
+                return;
+        }
+        setResult(calcResult.toString());
+    };
+
+    // Clears all states
+    const handleClear = () => {
+        setValue1('');
+        setValue2('');
+        setMathsymbols('');
+        setResult('');
+        setActiveField('value1');
+    };
+
+    return (
+        <header className="calculator-container"> 
+            <nav className="calculator-card">
+                <div className="input-group result-group">
+                    <input 
+                        value={result} 
+                        name="result" 
+                        type="text" 
+                        placeholder="result" 
+                        readOnly 
+                        className="calculator-input result-input"
+                    />
+                </div>
+                <div className="input-group fields-group">
+                    <input 
+                        value={value1} 
+                        onChange={(e) => setValue1(e.target.value)}
+                        onFocus={() => setActiveField('value1')}
+                        name='value1' 
+                        type='number' 
+                        placeholder='value1'
+                        className={`calculator-input ${activeField === 'value1' ? 'active-input' : ''}`}
+                    />
+                    <input 
+                        value={mathsymbols} 
+                        onChange={(e) => setMathsymbols(e.target.value)}
+                        name='mathsymbols' 
+                        type='text' 
+                        placeholder='symbol'
+                        className="calculator-input symbol-input"
+                    />
+                    <input 
+                        value={value2} 
+                        onChange={(e) => setValue2(e.target.value)}
+                        onFocus={() => setActiveField('value2')}
+                        name='value2' 
+                        type='number' 
+                        placeholder='value2'
+                        className={`calculator-input ${activeField === 'value2' ? 'active-input' : ''}`}
+                    />
+                </div>
+                <div className="keypad">
+                    <div className="operators-row">
+                        <button onClick={() => handleOperatorClick('/')}>/</button>
+                        <button onClick={() => handleOperatorClick('*')}>*</button>
+                        <button onClick={() => handleOperatorClick('-')}>-</button>
+                        <button onClick={() => handleOperatorClick('+')}>+</button>
+                        <button onClick={handleClear} className="clear-btn">C</button>
+                    </div>
+                    <div className="grid-row">
+                        <button onClick={() => handleDigitClick('7')}>7</button>
+                        <button onClick={() => handleDigitClick('8')}>8</button>
+                        <button onClick={() => handleDigitClick('9')}>9</button>
+                    </div>
+                    <div className="grid-row">
+                        <button onClick={() => handleDigitClick('4')}>4</button>
+                        <button onClick={() => handleDigitClick('5')}>5</button>
+                        <button onClick={() => handleDigitClick('6')}>6</button>
+                    </div>
+                    <div className="grid-row">
+                        <button onClick={() => handleDigitClick('1')}>1</button>
+                        <button onClick={() => handleDigitClick('2')}>2</button>
+                        <button onClick={() => handleDigitClick('3')}>3</button>
+                    </div>
+                    <div className="grid-row last-row">
+                        <button onClick={() => handleDigitClick('0')} className="zero-btn">0</button>
+                        <button onClick={() => handleDigitClick('.')}>.</button>
+                        <button onClick={handleCalculate} className="equals-btn">=</button>
+                    </div>
+                </div>
+            </nav>
+        </header>
+    );
+};
+
+export default CalculatriceSimple;
+
